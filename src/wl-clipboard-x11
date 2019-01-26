@@ -5,7 +5,7 @@
 #     drop-in replacement to X11 clipboard tools
 # Author: Ian Brunelli <ian@brunelli.me>
 # Source: https://github.com/brunelli/wl-clipboard-x11
-# License: GNU General Public License v2.0
+# License: GNU General Public License v3+
 
 declare -a CLIPBOARD_ARGS
 declare    CLIPBOARD_BACKEND="WL_CLIPBOARD"
