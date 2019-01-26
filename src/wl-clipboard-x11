@@ -1,8 +1,7 @@
 #!/bin/bash
 #
 # Name: wl-clipboard-x11
-# Description: A wrapper to use wl-clipboard as a
-#     drop-in replacement to X11 clipboard tools
+# Description: A wrapper to use wl-clipboard as a drop-in replacement to X11 clipboard tools
 # Author: Ian Brunelli <ian@brunelli.me>
 # Source: https://github.com/brunelli/wl-clipboard-x11
 # License: GNU General Public License v3+
@@ -10,6 +9,28 @@
 declare -a CLIPBOARD_ARGS
 declare    CLIPBOARD_BACKEND="WL_CLIPBOARD"
 declare    CLIPBOARD_COMMAND="wl-copy"
+declare -r VERSION=1
+
+show_help() {
+    cat << EOF
+Usage:
+    $(basename "$0") [argument...]
+
+A wrapper to use wl-clipboard as a drop-in replacement to X11 clipboard tools.
+EOF
+}
+
+show_version() {
+    cat << EOF
+wl-clipboard-x11 ${VERSION}
+Copyright (C) 2019 Ian Brunelli
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+===============================================================================
+EOF
+    ${CLIPBOARD_COMMAND} --version
+}
 
 case "$(basename "$0")" in
     xclip) CLIPBOARD_BACKEND="XCLIP";;
@@ -35,8 +56,8 @@ then
             -l|-loops) shift 2;;
             -d|-display) shift 2;;
             -h|-help)
-                CLIPBOARD_ARGS+=("--help")
-                shift
+                show_help
+                exit 0
                 ;;
             -selection)
                 case "$2" in
@@ -48,8 +69,8 @@ then
                 shift 2
                 ;;
             -version)
-                CLIPBOARD_ARGS+=("--version")
-                shift
+                show_version
+                exit 0
                 ;;
             -silent) shift;;
             -quiet)
@@ -100,13 +121,13 @@ then
                 shift
                 ;;
             -h|--help)
-                CLIPBOARD_ARGS+=("$1")
-                shift
+                show_help
+                exit 0
                 ;;
             -[v]*|--verbose) shift;;
             --version)
-                CLIPBOARD_ARGS+=("$1")
-                shift
+                show_version
+                exit 0
                 ;;
             *)
                 CLIPBOARD_ARGS+=("$1")
@@ -115,7 +136,23 @@ then
         esac
     done
 else
-    CLIPBOARD_ARGS=("${@}")
+    while (($# > 0))
+    do
+        case "$1" in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -v|--version)
+                show_version
+                exit 0
+                ;;
+            *)
+                CLIPBOARD_ARGS+=("$1")
+                shift
+                ;;
+        esac
+    done
 fi
 
 if [[ -p /dev/stdin ]]
