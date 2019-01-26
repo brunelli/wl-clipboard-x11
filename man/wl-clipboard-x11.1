@@ -1,0 +1,104 @@
+.TH WL-CLIPBOARD-X11 1 "2019 January 26" "Ian Brunelli" "wl-clipboard-x11"
+
+.SH NAME
+wl-clipboard-x11 - A wrapper to use wl-clipboard as a drop-in replacement to X11 clipboard tools
+
+.SH SYNOPSIS
+.B wl-clipboard-x11
+[ 
+.I ARGS
+]...
+
+.SH DESCRIPTION
+.B wl-clipboard-x11 
+is a very simple script that allows using 
+.B wl-clipboard
+in lieu of X11 clipboard tools (\fBxclip\fP and \fBxsel\fP).
+
+It tries to translate positional arguments to equivalent ones in \fBwl-clipboard\fP,
+using \fBargv[0]\fP (calling command) to determine if it's emulating \fBxclip\fP or \fBxsel\fP.
+
+.SH KNOWN ISSUES
+The following positional arguments have no equivalent feature in \fBwl-clipboard\fP, and thus
+are ignored by \fBwl-clipboard-x11\fP.
+
+\fBXCLIP\fP
+
+.RS 8
+.TP
+\fB-f\fP, \fB--filter\fP
+
+.TP
+\fB-l\fP \fInum\fP, \fB--loops\fP \fInum\fP
+
+.TP
+\fB-t\fP \fItarget\fP, \fB--target\fP \fItarget\fP
+
+.TP
+\fB-d\fP \fIdisplayname\fP, \fB--display\fP \fIdisplayname\fP
+
+.TP
+\fB-selection\fP secondary
+
+.TP
+\fB-noutf8\fP
+
+.RE
+\fBXSEL\fB
+
+.RS 8
+.TP
+\fB-a\fP, \fB--append\fP
+
+.TP
+\fB-f\fP, \fB--follow\fP
+
+.TP
+\fB-d\fP, \fB--delete\fP
+Will behave the same as \fB--clear\fP
+
+.TP
+\fB-s\fP, \fB--secondary\fP
+
+.TP
+\fB-k\fP, \fB--keep\fP
+
+.TP
+\fB-x\fP, \fB--exchange\fP
+
+.TP
+\fB--display\fP \fIdisplayname\fP
+
+.TP
+\fB-t\fP \fIms\fP, \fB--selectionTimeout\fP \fIms\fP
+
+.TP
+\fB-l\fP \fIfilename\fP, \fB--logfile\fP \fIfilename\fP
+
+.SH SEE ALSO
+.BR wl-clipboard (1)
+
+.SH AUTHOR
+.B wl-clipboard-x11
+was written by
+.MT ian@brunelli.me
+Ian Brunelli
+.ME .
+For updates and more information, a project page is available in
+.UR http://\:github.com/brunelli/wl-clipboard-x11
+GitHub
+.UE .
+
+.SH COPYING
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

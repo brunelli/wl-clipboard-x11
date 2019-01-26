@@ -1,0 +1,13 @@
+Simply typing
+
+    make install
+
+should install wl-clipboard-x11 to the standard locations.
+
+The makefile is aware of the following environment variables:
+
+PREFIX      default: /usr
+DESTDIR     default: 
+BINDIR      default: $(PREFIX)/bin
+SHAREDIR    default: $(PREFIX)/share
+MANDIR      default: $(PREFIX)/share/man

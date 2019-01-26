@@ -16,6 +16,8 @@ Usage:
     $(basename "$0") [argument...]
 
 A wrapper to use wl-clipboard as a drop-in replacement to X11 clipboard tools.
+
+See wl-clipboard-x11(1) for more details.
 EOF
 }
 
