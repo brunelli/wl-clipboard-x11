@@ -9,7 +9,6 @@ A wrapper to use wl-clipboard as a drop-in replacement to X11 clipboard tools
 
 Dependencies:
 
-- bash
 - [`wl-clipboard`](https://github.com/bugaevc/wl-clipboard)
 
 ```

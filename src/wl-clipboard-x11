@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Name: wl-clipboard-x11
 # Description: A wrapper to use wl-clipboard as a drop-in replacement to X11 clipboard tools
@@ -6,10 +6,9 @@
 # Source: https://github.com/brunelli/wl-clipboard-x11
 # License: GNU General Public License v3+
 
-declare -a CLIPBOARD_ARGS
-declare    CLIPBOARD_BACKEND="WL_CLIPBOARD"
-declare    CLIPBOARD_COMMAND="wl-copy"
-declare -r VERSION=1
+CLIPBOARD_BACKEND="WL_CLIPBOARD"
+CLIPBOARD_COMMAND="wl-copy"
+VERSION=1
 
 show_help() {
     cat << EOF
@@ -37,106 +36,103 @@ case "$(basename "$0")" in
     xsel) CLIPBOARD_BACKEND="XSEL";;
 esac
 
-if [[ $CLIPBOARD_BACKEND == XCLIP ]]
+: $((COUNT = $#))
+set -- "${@}" --
+
+if [ "$CLIPBOARD_BACKEND" = "XCLIP" ]
 then
-    while (($# > 0))
+    while [ $COUNT -ne 0 ]
     do
         case "$1" in
-            -i|-in) shift;;
+            -i|-in) true;;
             -o|-out)
                 CLIPBOARD_COMMAND="wl-paste"
-                CLIPBOARD_ARGS+=("--no-newline")
-                shift
+                set -- "${@}" "--no-newline"
                 ;;
-            -f|-filter) shift;;
-            -r|-rmlastnl)
-                CLIPBOARD_ARGS+=("--trim-newline")
-                shift
+            -f|-filter) true;;
+            -r|-rmlastnl) set -- "${@}" "--trim-newline";;
+            -l|-loops)
+                : $((COUNT = COUNT - 1))
+                shift 1
                 ;;
-            -l|-loops) shift 2;;
-            -d|-display) shift 2;;
+            -d|-display)
+                : $((COUNT = COUNT -1 ))
+                shift 1
+                ;;
             -h|-help)
                 show_help
                 exit 0
                 ;;
             -selection)
                 case "$2" in
-                    primary) CLIPBOARD_ARGS+=("--primary");;
+                    primary) set -- "${@}" "--primary";;
                     secondary) true;;
                     clipboard) true;;
-                    *) CLIPBOARD_ARGS+=("$2")
+                    *) set -- "${@}" "$2"
                 esac
-                shift 2
+                : $((COUNT = COUNT - 1))
+                shift 1
                 ;;
             -version)
                 show_version
                 exit 0
                 ;;
             -silent) shift;;
-            -quiet)
-                CLIPBOARD_ARGS+=("--foreground")
-                shift
-                ;;
-            -verbose) shift;;
-            *)
-                CLIPBOARD_ARGS+=("$1")
-                shift
-                ;;
+            -quiet) set -- "${@}" "--foreground";;
+            -verbose) true;;
+            *) set -- "${@}" "$1";;
         esac
+        : $((COUNT = COUNT - 1))
+        shift 1
     done
-elif [[ $CLIPBOARD_BACKEND == XSEL ]]
+elif [ "$CLIPBOARD_BACKEND" = "XSEL" ]
 then
-    while (($# > 0))
+    while [ $COUNT -ne 0 ]
     do
         case "$1" in
-            -a|--append) shift;;
-            -f|--follow) shift;;
-            -i|--input) shift;;
+            -a|--append) true;;
+            -f|--follow) true;;
+            -i|--input) true;;
             -o|--output)
                 CLIPBOARD_COMMAND="wl-paste"
-                CLIPBOARD_ARGS+=("--no-newline")
-                shift
+                set -- "${@}" "--no-newline"
                 ;;
-            -c|--clear)
-                CLIPBOARD_ARGS+=("$1")
-                shift
+            -c|--clear) set -- "${@}" "$1";;
+            -d|--delete) set -- "${@}" "--clear";;
+            -p|--primary) set -- "${@}" "$1";;
+            -s|--secondary) true;;
+            -b|--clipboard) true;;
+            -k|--keep) true;;
+            -x|--exchange) true;;
+            --display)
+                : $((COUNT = COUNT - 1))
+                shift 1
                 ;;
-            -d|--delete)
-                CLIPBOARD_ARGS+=("--clear")
-                shift
+            -t|--selectionTimeout)
+                : $((COUNT = COUNT - 1))
+                shift 1
                 ;;
-            -p|--primary)
-                CLIPBOARD_ARGS+=("$1")
-                shift
+            -l|--logfile)
+                : $((COUNT = COUNT - 1))
+                shift 1
                 ;;
-            -s|--secondary) shift;;
-            -b|--clipboard) shift;;
-            -k|--keep) shift;;
-            -x|--exchange) shift;;
-            -d|--display) shift 2;;
-            -t|--selectionTimeout) shift 2;;
-            -l|--logfile) shift 2;;
-            -n|--nodetach)
-                CLIPBOARD_ARGS+=("--foreground")
-                shift
-                ;;
+            -n|--nodetach) set -- "${@}" "--foreground";;
             -h|--help)
                 show_help
                 exit 0
                 ;;
-            -[v]*|--verbose) shift;;
+            -[v]*|--verbose) true;;
             --version)
                 show_version
                 exit 0
                 ;;
-            *)
-                CLIPBOARD_ARGS+=("$1")
-                shift
-                ;;
+            *) set -- "${@}" "$1";;
         esac
+        : $((COUNT = COUNT - 1))
+        shift 1
     done
 else
-    while (($# > 0))
+    while [ $COUNT -ne 0 ]
     do
         case "$1" in
             -h|--help)
@@ -147,18 +143,18 @@ else
                 show_version
                 exit 0
                 ;;
-            *)
-                CLIPBOARD_ARGS+=("$1")
-                shift
-                ;;
+            *) set -- "${@}" "$1";;
         esac
+        : $((COUNT = COUNT - 1))
+        shift 1
     done
 fi
 
-if [[ -p /dev/stdin ]]
+shift
+
+if [ -p /dev/stdin ]
 then
-    IFS='' read -d '' -r STDIN < /dev/stdin
-    printf %s "${STDIN}" | ${CLIPBOARD_COMMAND} "${CLIPBOARD_ARGS[@]}"
+    cat | ${CLIPBOARD_COMMAND} "${@}"
 else
-    ${CLIPBOARD_COMMAND} "${CLIPBOARD_ARGS[@]}"
+    ${CLIPBOARD_COMMAND} "${@}"
 fi
