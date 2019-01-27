@@ -8,7 +8,7 @@
 
 CLIPBOARD_BACKEND="WL_CLIPBOARD"
 CLIPBOARD_COMMAND="wl-copy"
-VERSION=1
+VERSION=2
 
 show_help() {
     cat << EOF
