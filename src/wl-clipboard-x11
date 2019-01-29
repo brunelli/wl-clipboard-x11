@@ -10,6 +10,8 @@ CLIPBOARD_BACKEND="WL_CLIPBOARD"
 CLIPBOARD_COMMAND="wl-copy"
 VERSION=2
 
+calc() { awk "BEGIN{print $*}"; }
+
 show_help() {
     cat << EOF
 Usage:
@@ -38,6 +40,7 @@ case "$(basename "$0")" in
     xsel) CLIPBOARD_BACKEND="XSEL";;
 esac
 
+TIMEOUT=0
 : $((COUNT = $#))
 set -- "${@}" --
 
@@ -111,6 +114,7 @@ then
                 shift 1
                 ;;
             -t|--selectionTimeout)
+                TIMEOUT=$(calc $2/1000)
                 : $((COUNT = COUNT - 1))
                 shift 1
                 ;;
@@ -153,6 +157,7 @@ else
 fi
 
 shift
+[ $TIMEOUT -ne 0 ] && CLIPBOARD_COMMAND="timeout $TIMEOUT $CLIPBOARD_COMMAND"
 
 if [ -p /dev/stdin ]
 then
