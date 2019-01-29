@@ -57,6 +57,7 @@ then
             -f|-filter) true;;
             -r|-rmlastnl) set -- "${@}" "--trim-newline";;
             -l|-loops)
+                (($2)) && set -- "${@}" "--paste-once"
                 : $((COUNT = COUNT - 1))
                 shift 1
                 ;;
