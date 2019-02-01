@@ -87,6 +87,7 @@ then
             -silent) shift;;
             -quiet) set -- "${@}" "--foreground";;
             -verbose) true;;
+            -noutf8) true;;
             *) set -- "${@}" "$1";;
         esac
         : $((COUNT = COUNT - 1))
