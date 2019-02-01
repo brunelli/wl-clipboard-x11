@@ -61,6 +61,7 @@ then
                 : $((COUNT = COUNT - 1))
                 shift 1
                 ;;
+            -t|-target) set -- "${@}" "--type";;
             -d|-display)
                 : $((COUNT = COUNT -1 ))
                 shift 1
