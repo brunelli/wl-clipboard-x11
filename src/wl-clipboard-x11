@@ -44,6 +44,7 @@ case "$(basename "$0")" in
 esac
 
 APPEND=0
+FOLLOW=0
 TIMEOUT=0
 TIMEOUT_COMMAND=""
 : $((COUNT = $#))
@@ -104,7 +105,7 @@ then
     do
         case "$1" in
             -a|--append) APPEND=1;;
-            -f|--follow) true;;
+            -f|--follow) FOLLOW=1;;
             -i|--input) CLIPBOARD_COMMAND="${WL_COPY}";;
             -o|--output)
                 CLIPBOARD_COMMAND="${WL_PASTE}"
@@ -167,7 +168,30 @@ fi
 shift
 [ "$TIMEOUT" -ne 0 ] && TIMEOUT_COMMAND="timeout $TIMEOUT"
 
-if [ $((APPEND)) -ne 0 ]
+if [ $((FOLLOW)) -ne 0 ]
+then
+    TEMP=$(mktemp -t ${CLIPBOARD_BACKEND}-buffer-XXXXXX)
+
+    trap "rm -f ${TEMP}; exit" EXIT
+    trap "" INT
+
+    if [ "$TIMEOUT_COMMAND" ]
+    then
+        sleep ${TIMEOUT}; kill $$ &
+    fi
+
+    while dd count=1 of=${TEMP} status=none
+    do
+        {
+            [ $((APPEND)) -ne 0 ] && ${WL_PASTE} -n 2> /dev/null
+            cat ${TEMP}
+        } |
+            ${WL_COPY} "${@}"
+
+        [ -s ${TEMP} ] || break
+        APPEND=1
+    done
+elif [ $((APPEND)) -ne 0 ]
 then
     {
         ${WL_PASTE} -n 2> /dev/null
