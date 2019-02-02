@@ -6,8 +6,11 @@
 # Source: https://github.com/brunelli/wl-clipboard-x11
 # License: GNU General Public License v3+
 
+WL_COPY=$(which wl-copy) || exit 1
+WL_PASTE=$(which wl-paste) || exit 1
+
 CLIPBOARD_BACKEND="WL_CLIPBOARD"
-CLIPBOARD_COMMAND="wl-copy"
+CLIPBOARD_COMMAND="${WL_COPY}"
 VERSION=2
 
 calc() { awk "BEGIN{print $*}"; }
@@ -49,9 +52,9 @@ then
     while [ $COUNT -ne 0 ]
     do
         case "$1" in
-            -i|-in) true;;
+            -i|-in) CLIPBOARD_COMMAND="${WL_COPY}";;
             -o|-out)
-                CLIPBOARD_COMMAND="wl-paste"
+                CLIPBOARD_COMMAND="${WL_PASTE}"
                 set -- "${@}" "--no-newline"
                 ;;
             -f|-filter) true;;
@@ -100,9 +103,9 @@ then
         case "$1" in
             -a|--append) true;;
             -f|--follow) true;;
-            -i|--input) true;;
+            -i|--input) CLIPBOARD_COMMAND="${WL_COPY}";;
             -o|--output)
-                CLIPBOARD_COMMAND="wl-paste"
+                CLIPBOARD_COMMAND="${WL_PASTE}"
                 set -- "${@}" "--no-newline"
                 ;;
             -c|--clear) set -- "${@}" "$1";;
