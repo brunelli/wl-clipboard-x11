@@ -43,7 +43,9 @@ case "$(basename "$0")" in
     xsel) CLIPBOARD_BACKEND="XSEL";;
 esac
 
+APPEND=0
 TIMEOUT=0
+TIMEOUT_COMMAND=""
 : $((COUNT = $#))
 set -- "${@}" --
 
@@ -101,7 +103,7 @@ then
     while [ $COUNT -ne 0 ]
     do
         case "$1" in
-            -a|--append) true;;
+            -a|--append) APPEND=1;;
             -f|--follow) true;;
             -i|--input) CLIPBOARD_COMMAND="${WL_COPY}";;
             -o|--output)
@@ -163,11 +165,15 @@ else
 fi
 
 shift
-[ $TIMEOUT -ne 0 ] && CLIPBOARD_COMMAND="timeout $TIMEOUT $CLIPBOARD_COMMAND"
+[ "$TIMEOUT" -ne 0 ] && TIMEOUT_COMMAND="timeout $TIMEOUT"
 
-if [ -p /dev/stdin ]
+if [ $((APPEND)) -ne 0 ]
 then
-    cat | ${CLIPBOARD_COMMAND} "${@}"
+    {
+        ${WL_PASTE} -n 2> /dev/null
+        cat
+    } |
+        ${TIMEOUT_COMMAND} ${WL_COPY} "${@}"
 else
-    ${CLIPBOARD_COMMAND} "${@}"
+    ${TIMEOUT_COMMAND} ${CLIPBOARD_COMMAND} "${@}"
 fi
