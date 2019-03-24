@@ -18,9 +18,9 @@ Dependencies:
 - [`wl-clipboard`][wl-clipboard]
 
 ```
-$ git clone https://github.com/brunelli/wl-clipboard-x11.git wl-clipboard-x11
+$ git clone https://github.com/brunelli/wl-clipboard-x11.git
 $ cd wl-clipboard-x11
-$ make install
+$ sudo make install
 ```
 
 See [INSTALL][install] for details.
