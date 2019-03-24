@@ -1,6 +1,6 @@
 Simply typing
 
-    make install
+    sudo make install
 
 should install wl-clipboard-x11 to the standard locations.
 
