@@ -6,8 +6,8 @@
 # Source: https://github.com/brunelli/wl-clipboard-x11
 # License: GNU General Public License v3+
 
-WL_COPY=$(which wl-copy) || exit 1
-WL_PASTE=$(which wl-paste) || exit 1
+WL_COPY=$(command -v wl-copy) || exit 1
+WL_PASTE=$(command -v wl-paste) || exit 1
 
 CLIPBOARD_BACKEND="WL_CLIPBOARD"
 CLIPBOARD_COMMAND="${WL_COPY}"
@@ -63,7 +63,7 @@ then
             -f|-filter) true;;
             -r|-rmlastnl) set -- "${@}" "--trim-newline";;
             -l|-loops)
-                (($2)) && set -- "${@}" "--paste-once"
+                [ "$2" -gt 0 ] 2> /dev/null && set -- "${@}" "--paste-once"
                 : $((COUNT = COUNT - 1))
                 shift 1
                 ;;
@@ -123,7 +123,7 @@ then
                 shift 1
                 ;;
             -t|--selectionTimeout)
-                TIMEOUT=$(calc $2/1000)
+                TIMEOUT=$(calc "$2/1000")
                 : $((COUNT = COUNT - 1))
                 shift 1
                 ;;
@@ -172,23 +172,23 @@ if [ $((FOLLOW)) -ne 0 ]
 then
     TEMP=$(mktemp -t ${CLIPBOARD_BACKEND}-buffer-XXXXXX)
 
-    trap "rm -f ${TEMP}; exit" EXIT
-    trap "" INT
+    trap 'rm -f ${TEMP}; exit' EXIT
+    trap '' INT
 
     if [ "$TIMEOUT_COMMAND" ]
     then
-        sleep ${TIMEOUT}; kill $$ &
+        sleep "${TIMEOUT}"; kill $$ &
     fi
 
-    while dd count=1 of=${TEMP} status=none
+    while dd count=1 of="${TEMP}" status=none
     do
         {
             [ $((APPEND)) -ne 0 ] && ${WL_PASTE} -n 2> /dev/null
-            cat ${TEMP}
+            cat "${TEMP}"
         } |
             ${WL_COPY} "${@}"
 
-        [ -s ${TEMP} ] || break
+        [ -s "${TEMP}" ] || break
         APPEND=1
     done
 elif [ $((APPEND)) -ne 0 ]
@@ -197,7 +197,7 @@ then
         ${WL_PASTE} -n 2> /dev/null
         cat
     } |
-        ${TIMEOUT_COMMAND} ${WL_COPY} "${@}"
+        ${TIMEOUT_COMMAND} "${WL_COPY}" "${@}"
 else
-    ${TIMEOUT_COMMAND} ${CLIPBOARD_COMMAND} "${@}"
+    ${TIMEOUT_COMMAND} "${CLIPBOARD_COMMAND}" "${@}"
 fi
