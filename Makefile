@@ -14,6 +14,8 @@ install:
 	@install -m 0755 -v "$(SRCFILE)" "$(DESTDIR)$(SHAREDIR)/$(NAME)/$(NAME)"
 	@install -v -d "$(DESTDIR)$(MANDIR)/man1"
 	@install -m 0644 -v man/$(NAME).1 "$(DESTDIR)$(MANDIR)/man1/$(NAME).1"
+	@ln -nsvf "$(NAME).1" "$(DESTDIR)$(MANDIR)/man1/xclip.1"
+	@ln -nsvf "$(NAME).1" "$(DESTDIR)$(MANDIR)/man1/xsel.1"
 	@install -v -d "$(DESTDIR)$(BINDIR)/"
 	@ln -nsvf "$(DESTDIR)$(SHAREDIR)/$(NAME)/$(NAME)" "$(DESTDIR)$(BINDIR)/xclip"
 	@ln -nsvf "$(DESTDIR)$(SHAREDIR)/$(NAME)/$(NAME)" "$(DESTDIR)$(BINDIR)/xsel"
@@ -21,6 +23,8 @@ install:
 uninstall:
 	unlink "$(DESTDIR)$(BINDIR)/xclip"
 	unlink "$(DESTDIR)$(BINDIR)/xsel"
+	unlink "$(DESTDIR)$(MANDIR)/man1/xclip.1"
+	unlink "$(DESTDIR)$(MANDIR)/man1/xsel.1"
 	@rm -vf \
 		"$(DESTDIR)$(MANDIR)/man1/$(NAME).1" \
 		"$(DESTDIR)$(SHAREDIR)/$(NAME)/$(NAME)"
