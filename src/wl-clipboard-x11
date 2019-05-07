@@ -63,7 +63,7 @@ then
             -f|-filter) true;;
             -r|-rmlastnl) set -- "${@}" "--trim-newline";;
             -l|-loops)
-                [ "$2" -gt 0 ] 2> /dev/null && set -- "${@}" "--paste-once"
+                [ $(($2)) -gt 0 ] && set -- "${@}" "--paste-once"
                 : $((COUNT = COUNT - 1))
                 shift 1
                 ;;
@@ -101,6 +101,11 @@ then
     done
 elif [ "$CLIPBOARD_BACKEND" = "XSEL" ]
 then
+    if [ $COUNT -eq 0 ]
+    then
+        CLIPBOARD_COMMAND="${WL_PASTE}"
+        set -- "${@}" --primary
+    fi
     while [ $COUNT -ne 0 ]
     do
         case "$1" in
