@@ -103,8 +103,8 @@ elif [ "$CLIPBOARD_BACKEND" = "XSEL" ]
 then
     if [ $COUNT -eq 0 ]
     then
-        CLIPBOARD_COMMAND="${WL_PASTE}"
-        set -- "${@}" --primary
+        ${WL_PASTE} --primary --no-newline
+        exit
     fi
     while [ $COUNT -ne 0 ]
     do
