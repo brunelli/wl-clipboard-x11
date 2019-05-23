@@ -11,7 +11,7 @@ WL_PASTE=$(command -v wl-paste) || exit 1
 
 CLIPBOARD_BACKEND="WL_CLIPBOARD"
 CLIPBOARD_COMMAND="${WL_COPY}"
-VERSION=2
+VERSION=4
 
 calc() { awk "BEGIN{print $*}"; }
 
