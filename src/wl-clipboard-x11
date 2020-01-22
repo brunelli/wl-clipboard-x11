@@ -77,10 +77,10 @@ then
                 exit 0
                 ;;
             -selection)
-                case "$2" in
-                    primary) set -- "${@}" "--primary";;
-                    secondary) true;;
-                    clipboard) true;;
+                case "$(printf '%s\n' "$2" | tr '[:upper:]' '[:lower:]')" in
+                    p*) set -- "${@}" "--primary";;
+                    s*) true;;
+                    c*) true;;
                     *) set -- "${@}" "$2"
                 esac
                 : $((COUNT = COUNT - 1))
