@@ -15,6 +15,25 @@ VERSION=4
 
 calc() { awk "BEGIN{print $*}"; }
 
+parse_xclip_opt() {
+    OPTS="-in -out -filter -rmlastnl -loops -target -display -help -selection -version -silent -quiet -verbose -noutf8"
+    SEL=""
+    for OPT in $OPTS
+    do
+        printf '%s\n' "$OPT" | grep -q "^$1" &&
+        {
+            if [ -z "$SEL" ]
+            then
+                SEL="$OPT"
+            else
+                printf '%s' "$1"
+                return 1
+            fi
+        }
+    done
+    printf '%s' "$SEL"
+}
+
 show_help() {
     cat << EOF
 Usage:
@@ -54,25 +73,26 @@ if [ "$CLIPBOARD_BACKEND" = "XCLIP" ]
 then
     while [ $COUNT -ne 0 ]
     do
-        case "$1" in
-            -i|-in) CLIPBOARD_COMMAND="${WL_COPY}";;
-            -o|-out)
+        CMD=$(parse_xclip_opt "$1")
+        case "$CMD" in
+            -in) CLIPBOARD_COMMAND="${WL_COPY}";;
+            -out)
                 CLIPBOARD_COMMAND="${WL_PASTE}"
                 set -- "${@}" "--no-newline"
                 ;;
-            -f|-filter) true;;
-            -r|-rmlastnl) set -- "${@}" "--trim-newline";;
-            -l|-loops)
+            -filter) true;;
+            -rmlastnl) set -- "${@}" "--trim-newline";;
+            -loops)
                 [ $(($2)) -gt 0 ] && set -- "${@}" "--paste-once"
                 : $((COUNT = COUNT - 1))
                 shift 1
                 ;;
-            -t|-target) set -- "${@}" "--type";;
-            -d|-display)
+            -target) set -- "${@}" "--type";;
+            -display)
                 : $((COUNT = COUNT -1 ))
                 shift 1
                 ;;
-            -h|-help)
+            -help)
                 show_help
                 exit 0
                 ;;
